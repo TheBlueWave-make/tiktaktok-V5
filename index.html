@@ -45,8 +45,9 @@
     .card {
       background:var(--card); border:3px solid var(--dark); border-radius:28px;
       box-shadow:8px 8px 0 var(--dark); padding:28px; width:100%; max-width:460px; position:relative;
+      display:flex; flex-direction:column; gap:8px;
     }
-    .turn-bar { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:22px; }
+    .turn-bar { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:0; }
     .turn-pill {
       display:inline-flex; align-items:center; gap:8px; padding:8px 20px;
       border-radius:var(--pill-radius); font-weight:800; font-size:15px;
@@ -56,7 +57,7 @@
     .turn-pill.o-turn { background:var(--blue); color:white; }
     .turn-label { font-size:13px; font-weight:700; color:#888; letter-spacing:0.5px; text-transform:uppercase; }
     .grid-wrapper {
-      position:relative; width:100%; margin-bottom:22px; background:#fff;
+      position:relative; width:100%; margin-bottom:0; background:#fff;
       border:2.5px solid #1a1a2e; border-radius:6px; overflow:hidden; box-shadow:4px 4px 0 #1a1a2e;
     }
     .grid { display:grid; grid-template-columns:repeat(8,1fr); width:100%; aspect-ratio:1; }
@@ -92,7 +93,7 @@
     .x-svg .x-line2 { animation-delay:0.1s; }
     @keyframes drawLine  { to { stroke-dashoffset:0; } }
     @keyframes drawCircle { to { stroke-dashoffset:0; } }
-    .btn-row { display:flex; gap:10px; justify-content:center; }
+    .btn-row { display:flex; gap:10px; justify-content:center; margin-top:8px; }
     .btn {
       flex:1; padding:12px 20px; border-radius:var(--pill-radius); border:2.5px solid var(--dark);
       font-family:'Nunito',sans-serif; font-weight:800; font-size:14px; cursor:pointer;
@@ -118,7 +119,7 @@
       100% { transform:scale(1) rotate(0deg); }
     }
     .overlay .btn { font-size:15px; padding:12px 32px; min-width:160px; }
-    .mode-toggle { display:flex; align-items:center; gap:8px; margin-bottom:14px; justify-content:center; }
+    .mode-toggle { display:flex; align-items:center; gap:8px; margin-bottom:0; justify-content:center; }
     .toggle-label { font-size:13px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:0.5px; }
     .toggle-track {
       width:48px; height:26px; background:var(--gray); border-radius:100px;
@@ -134,9 +135,9 @@
     /* ── DIFFICULTY ── */
     .difficulty-row {
       display:flex; align-items:center; justify-content:center; gap:6px;
-      margin-bottom:18px; transition:opacity 0.2s;
+      margin:0; margin-top:8px; transition:opacity 0.2s;
     }
-    .difficulty-row.hidden { opacity:0; pointer-events:none; }
+    .difficulty-row.hidden { opacity:0; pointer-events:none; height:0; margin:0; overflow:hidden; }
     .diff-label { font-size:12px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:0.5px; margin-right:2px; }
     .diff-btn {
       padding:5px 14px; border-radius:100px; border:2.5px solid var(--dark);
@@ -206,19 +207,19 @@
       </div>
     </div>
     <div class="pts-config-pill">
-      <span>⬛ 2×2 Block</span>
-      <div class="pts-controls">
-        <button onclick="changePts('sq',-1)">−</button>
-        <span class="pts-val" id="pts-sq">1</span>
-        <button onclick="changePts('sq',+1)">+</button>
-      </div>
-    </div>
-    <div class="pts-config-pill">
       <span>🔲 4 Corners</span>
       <div class="pts-controls">
         <button onclick="changePts('corners',-1)">−</button>
         <span class="pts-val" id="pts-corners">1</span>
         <button onclick="changePts('corners',+1)">+</button>
+      </div>
+    </div>
+    <div class="pts-config-pill">
+      <span>💎 Diamond</span>
+      <div class="pts-controls">
+        <button onclick="changePts('diamond',-1)">−</button>
+        <span class="pts-val" id="pts-diamond">1</span>
+        <button onclick="changePts('diamond',+1)">+</button>
       </div>
     </div>
   </div>
@@ -233,16 +234,32 @@
     </div>
 
     <div class="difficulty-row hidden" id="diffRow">
-      <span class="diff-label">Level:</span>
-      <button class="diff-btn active-easy"  id="diffEasy"   onclick="setDifficulty('easy')">Swihel😊</button>
+      <button class="diff-btn active-easy"  id="diffEasy"   onclick="setDifficulty('easy')">Swihal😊</button>
       <button class="diff-btn"              id="diffMedium" onclick="setDifficulty('medium')">Ma bin ou bin😐 </button>
       <button class="diff-btn"              id="diffHard"   onclick="setDifficulty('hard')">INA 3ADABI LA CHADID😈!</button>
     </div>
 
     <div class="turn-bar">
-      <span class="turn-label">Current turn</span>
-      <div class="turn-pill x-turn" id="turnPill"><span>✕</span><span>Player X</span></div>
+      <div class="turn-pill x-turn" id="turnPill"><span></span><span>Player X</span></div>
       <span class="thinking-badge" id="thinkingBadge">⚙️ Thinking…</span>
+    </div>
+
+    <!-- Chess clocks (2-player only) -->
+    <div id="clockBar" style="display:none;justify-content:space-between;align-items:center;margin-bottom:0;gap:8px;">
+      <div style="flex:1;background:#e84040;border:2.5px solid #1a1a2e;border-radius:100px;padding:6px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 3px 0 rgba(0,0,0,0.15);">
+        <span style="font-size:14px;font-weight:900;color:white;">Player X</span>
+        <span id="clock-X" style="font-family:'Lilita One',cursive;font-size:18px;color:white;">70s</span>
+      </div>
+      <span style="font-size:18px;">⏱️</span>
+      <div style="flex:1;background:#3b6fff;border:2.5px solid #1a1a2e;border-radius:100px;padding:6px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 3px 0 rgba(0,0,0,0.15);">
+        <span style="font-size:14px;font-weight:900;color:white;">Player O</span>
+        <span id="clock-O" style="font-family:'Lilita One',cursive;font-size:18px;color:white;">70s</span>
+      </div>
+    </div>
+
+    <!-- Start clock button (2-player only) -->
+    <div id="startClockWrap" style="display:none;justify-content:center;margin-bottom:0;">
+      <button class="btn" id="startClockBtn" onclick="beginClock()" style="background:#3ecf8e;color:white;flex:none;padding:10px 32px;font-size:15px;">▶ Start Game</button>
     </div>
 
     <div class="grid-wrapper">
@@ -271,7 +288,7 @@
 
   <script>
     const N = 8;
-    const POINTS = { line:1, sq:1, corners:1 };
+    const POINTS = { line:1, corners:1, diamond:1 };
     function changePts(type, delta) {
       POINTS[type] = Math.max(1, POINTS[type] + delta);
       document.getElementById('pts-'+type).textContent = POINTS[type];
@@ -280,8 +297,81 @@
     let board2D = Array.from({length:N},()=>Array(N).fill(null));
     let board   = Array(64).fill(null);
     let current = 'X', gameOver = false, vsAI = false;
+    let firstPlayer = 'X'; // alternates each round
     let difficulty = 'easy';
     let pts = {X:0,O:0}, scored = {X:new Set(),O:new Set()}, lockedCells = new Set();
+
+    // Chess clock
+    const CLOCK_TIME = 70;
+    let clock = {X: CLOCK_TIME, O: CLOCK_TIME};
+    let clockInterval = null;
+    let clockTurnStart = null;
+    let clockStarted = false;
+
+    function beginClock(){
+      if(vsAI || clockStarted) return;
+      clockStarted = true;
+      document.getElementById('startClockWrap').style.display = 'none';
+      startClock();
+    }
+
+    function startClock(){
+      if(vsAI) return;
+      stopClock();
+      clockTurnStart = Date.now();
+      clockInterval = setInterval(()=>{
+        const elapsed = (Date.now() - clockTurnStart) / 1000;
+        const remaining = Math.max(0, clock[current] - elapsed);
+        updateClockDisplay(current, remaining);
+        if(remaining <= 0){
+          stopClock();
+          clock[current] = 0;
+          updateClockDisplay(current, 0);
+          timeOut(current);
+        }
+      }, 100);
+    }
+
+    function stopClock(){
+      if(clockInterval){ clearInterval(clockInterval); clockInterval=null; }
+      if(clockTurnStart !== null){
+        const elapsed = (Date.now() - clockTurnStart) / 1000;
+        clock[current] = Math.max(0, clock[current] - elapsed);
+        clockTurnStart = null;
+      }
+    }
+
+    function updateClockDisplay(p, val){
+      const secs = Math.ceil(val);
+      const el = document.getElementById('clock-'+p);
+      if(!el) return;
+      el.textContent = secs + 's';
+      el.style.color = '#fff';
+      el.style.fontWeight = '900';
+      el.style.textShadow = 'none';
+    }
+
+    function timeOut(p){
+      gameOver = true;
+      const ov = document.getElementById('overlay');
+      const icon = document.getElementById('resultIcon');
+      const text = document.getElementById('resultText');
+      const sub  = document.getElementById('resultSub');
+      const loser = p === 'X' ? 'Player X' : 'Player O';
+      const winner = p === 'X' ? 'Player O' : 'Player X';
+      icon.textContent = '⏰';
+      text.textContent = `${loser} ran out of time!`;
+      sub.textContent  = `${winner} wins!`;
+      ov.classList.add('show');
+    }
+
+    function resetClocks(){
+      stopClock();
+      clockStarted = false;
+      clock = {X: CLOCK_TIME, O: CLOCK_TIME};
+      updateClockDisplay('X', CLOCK_TIME);
+      updateClockDisplay('O', CLOCK_TIME);
+    }
 
     function inBounds(r,c){return r>=0&&r<N&&c>=0&&c<N;}
 
@@ -311,6 +401,14 @@
       return r2;
     }
 
+    function findDiamond(p){
+      const r2=[];
+      for(let r=1;r<N-1;r++)for(let c=1;c<N-1;c++)
+        if(board2D[r-1][c]===p&&board2D[r][c-1]===p&&board2D[r][c+1]===p&&board2D[r+1][c]===p)
+          r2.push([[r-1,c],[r,c-1],[r,c+1],[r+1,c]]);
+      return r2;
+    }
+
     function checkCorners(p){
       const corners=[[0,0],[0,N-1],[N-1,0],[N-1,N-1]];
       return corners.every(([r,c])=>board2D[r][c]===p)?corners:null;
@@ -321,7 +419,7 @@
     function gatherNewPatterns(p){
       const nk=[];
       for(const line of findLineK(p,4)){const key='L4:'+lineKey(line);if(!scored[p].has(key))nk.push({key,cells:line,type:'line'});}
-      for(const sq of find2x2(p)){const key='SQ:'+lineKey(sq);if(!scored[p].has(key))nk.push({key,cells:sq,type:'sq'});}
+      for(const d of findDiamond(p)){const key='DM:'+lineKey(d);if(!scored[p].has(key))nk.push({key,cells:d,type:'diamond'});}
       const corners=checkCorners(p);if(corners){const key='CORNERS';if(!scored[p].has(key))nk.push({key,cells:corners,type:'corners'});}
       return nk;
     }
@@ -349,6 +447,7 @@
 
     function handleClick(i){
       if(gameOver||board[i]||lockedCells.has(i))return;
+      if(!vsAI && !clockStarted) return; // wait for Start button
       if(vsAI&&current==='O')return;
       makeMove(i);
       if(vsAI&&!gameOver){
@@ -359,6 +458,7 @@
 
     function makeMove(i){
       const r=Math.floor(i/N),c=i%N;
+      stopClock();
       board[i]=current;board2D[r][c]=current;
       const el=document.querySelectorAll('.cell')[i];
       el.innerHTML=renderMark(current);
@@ -367,6 +467,7 @@
       if(board.every(v=>v!==null)){gameOver=true;setTimeout(()=>endGame(),500);return;}
       current=current==='X'?'O':'X';
       updateTurn();
+      startClock();
     }
 
     /* ── SIMULATE (pure, no mutation of scored) ── */
@@ -601,22 +702,25 @@
     }
 
     function endGame(){
+      stopClock();
       const ov=document.getElementById('overlay');
       const icon=document.getElementById('resultIcon');
       const text=document.getElementById('resultText');
       const sub=document.getElementById('resultSub');
       const dl={easy:'😊 Easy',medium:'😐 Medium',hard:'😈 Hard'}[difficulty];
+      const nextFirst = firstPlayer === 'X' ? 'O' : 'X';
+      const nextName = (vsAI && nextFirst === 'O') ? '🤖 mouad' : `Player ${nextFirst}`;
       if(pts.X>pts.O){
         icon.textContent='🎉';
         text.textContent=vsAI?'You Win! 🎉':'Player X Wins!';
-        sub.textContent=`${pts.X} pts vs ${pts.O} pts`;
+        sub.textContent=`${pts.X} pts vs ${pts.O} pts · ${nextName} goes first next`;
       }else if(pts.O>pts.X){
         icon.textContent=vsAI?'🤖':'🏆';
         text.textContent=vsAI?`MOUAD Wins! (${dl})`:'Player O Wins!';
-        sub.textContent=`${pts.O} pts vs ${pts.X} pts`;
+        sub.textContent=`${pts.O} pts vs ${pts.X} pts · ${nextName} goes first next`;
       }else{
         icon.textContent='🤝';text.textContent="It's a Draw!";
-        sub.textContent=`Both scored ${pts.X} pts`;
+        sub.textContent=`Both scored ${pts.X} pts · ${nextName} goes first next`;
       }
       ov.classList.add('show');
     }
@@ -624,8 +728,8 @@
     function updateTurn(){
       const pill=document.getElementById('turnPill');
       pill.className='turn-pill '+(current==='X'?'x-turn':'o-turn');
-      const name=(vsAI&&current==='O')?'🤖 CPU':`Player ${current}`;
-      pill.innerHTML=`<span>${current==='X'?'✕':'○'}</span><span>${name}</span>`;
+      const name=(vsAI&&current==='O')?'🤖 mouad':`Player ${current}`;
+      pill.innerHTML=`<span>${name}</span>`;
       document.getElementById('scoreX').classList.toggle('active',current==='X');
       document.getElementById('scoreO').classList.toggle('active',current==='O');
     }
@@ -639,13 +743,23 @@
       board=Array(64).fill(null);
       board2D=Array.from({length:N},()=>Array(N).fill(null));
       pts={X:0,O:0};scored={X:new Set(),O:new Set()};lockedCells=new Set();
-      current='X';gameOver=false;
+      firstPlayer=firstPlayer==='X'?'O':'X'; // alternate each round
+      current=firstPlayer;gameOver=false;
       document.querySelectorAll('.cell').forEach(c=>{c.innerHTML='';c.className='cell';});
       document.getElementById('overlay').classList.remove('show');
       showThinking(false);updateScoreDisplay();updateTurn();
+      resetClocks();
+      clockStarted = false;
+      document.getElementById('clockBar').style.display = vsAI ? 'none' : 'flex';
+      document.getElementById('startClockWrap').style.display = vsAI ? 'none' : 'flex';
+      // if AI goes first
+      if(vsAI&&current==='O'){
+        showThinking(true);
+        setTimeout(()=>{showThinking(false);aiMove();},difficulty==='hard'?900:420);
+      }
     }
 
-    function newGame(){restartRound();}
+    function newGame(){firstPlayer='X';restartRound();}
 
     function toggleMode(){
       vsAI=!vsAI;
@@ -664,6 +778,8 @@
     }
 
     updateTurn();
+    document.getElementById('clockBar').style.display = vsAI ? 'none' : 'flex';
+    document.getElementById('startClockWrap').style.display = vsAI ? 'none' : 'flex';
   </script>
 </body>
 </html>
